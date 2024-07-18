@@ -25,14 +25,14 @@ class Server:
 
     def assign_roles(self):
         role_list = random.sample(self.clients, len(self.clients))
-        roles = {client: 'detective' for client in role_list[:2]}
-        roles[role_list[2]] = 'imposter'
+        roles = {i + 1: 'detective' for i in range(2)}
+        roles[3] = 'imposter'
         self.player_roles = roles
-        print('Roles: ', roles)
+        print('Roles:', self.player_roles)
 
     def send_start_info(self):
-        for client in self.clients:
-            role = self.player_roles[client]
+        for idx, client in enumerate(self.clients, start=1):
+            role = self.player_roles[idx]
             info = {'role': role}
             if role == 'detective':
                 info['secret_word'] = self.secret_word
@@ -53,22 +53,38 @@ class Server:
             data = client.recv(1024)
             vote = pickle.loads(data)
             votes[vote] = votes.get(vote, 0) + 1
-            print(votes)
-        alleged_imposter = max(votes, key=votes.get)
-        print('Alleged imposter: ', alleged_imposter) 
-        print('Alleged imposter role: ', list(self.player_roles.items())[int(alleged_imposter)-1])
-        print('(type)', type(list(self.player_roles.items())[int(alleged_imposter)-1]))
-        if list(self.player_roles.items())[int(alleged_imposter)-1] == 'imposter':
-            print('Imposter caught!')
-            client.send(pickle.dumps({"result": "Detectives win!"}))
-        else:
-            print('Imposter not caught!')
-            client.send(pickle.dumps({"result": "Detectives lose..."})) 
+        alleged_imposter = int(max(votes, key=votes.get))
+        self.announce_result(alleged_imposter)
 
-    # def announce_result(self, imposter_client):
-    #     for client in self.clients:
-    #         result = "imposter" if client == imposter_client else "detective"
-    #         client.send(pickle.dumps({"result": result}))
+    def announce_result(self, alleged_imposter):
+        for _, client in enumerate(self.clients, start=1):
+            if self.player_roles[alleged_imposter] == 'imposter':
+                client.send(pickle.dumps({"result": 'Detectives win!'}))
+            else:
+                client.send(pickle.dumps({"result": 'Detectives lose...'}))
+       # Ask players if they want to play again
+        self.ask_play_again()
+
+    def ask_play_again(self):
+        responses = []
+        for client in self.clients:
+            client.send(pickle.dumps({"play_again": True}))
+            data = client.recv(1024)
+            response = pickle.loads(data)
+            responses.append(response)
+
+        if responses.count('yes') == len(self.clients):
+            print("Restarting game...")
+            self.reset_game()
+        else:
+            print("Shutting down server...")
+            self.shutdown_server()
+
+    def reset_game(self):
+        self.secret_word = random.choice(words)
+        self.assign_roles()
+        self.send_start_info()
+        self.start_gameplay()
 
     def start(self):
         print("Server started")
@@ -77,12 +93,24 @@ class Server:
                 client, addr = self.server.accept()
                 print(f"New connection: {addr}")
                 threading.Thread(target=self.handle_client, args=(client, addr)).start()
-        except KeyboardInterrupt:
-            print("Shutting down the server...")
-            # Perform cleanup here, like closing client connections
-            for client in self.clients:
+        except Exception as e:
+            print(f"Server stopped: {e}")
+        finally:
+            self.shutdown_server()
+
+
+    def shutdown_server(self):
+        print("Shutting down server...")
+        # Close all client connections
+        for client in self.clients:
+            try:
                 client.close()
-            print("Server shut down successfully.")
+            except:
+                pass
+        # Close the server socket
+        self.server.close()
+        print("Server shut down successfully")
+
 
 if __name__ == "__main__":
     server = Server()

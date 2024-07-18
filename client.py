@@ -27,6 +27,8 @@ class Client:
                 self.vote()
             elif 'result' in info:
                 print(f"Game result: {info['result']}")
+            elif 'play_again' in info:
+                self.play_again()
 
     def take_turn(self):
         word = input("Enter a word describing the secret word: ")
@@ -35,6 +37,10 @@ class Client:
     def vote(self):
         vote = input("Enter the player number you think is the imposter: ")
         self.client.send(pickle.dumps(vote))
+    
+    def play_again(self):
+        response = input("Do you want to play again? (yes/no): ")
+        self.client.send(pickle.dumps(response))
 
     def start(self):
         pass  # Implement the interaction loop here if needed
