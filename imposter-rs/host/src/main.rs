@@ -4,6 +4,7 @@ use methods::{
     IMPOSTER_GAME_ELF, IMPOSTER_GAME_ID
 };
 use risc0_zkvm::{default_prover, ExecutorEnv};
+use std::collections::HashMap;
 
 fn main() {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
@@ -23,10 +24,14 @@ fn main() {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
-    // For example:
-    let input: u32 = 15 * u32::pow(2, 27) + 1;
+    // Create a new HashMap for voters and votes
+    let mut votes: HashMap<u32, char> = HashMap::new();
+    votes.insert(1, '3');
+    votes.insert(2, '3');
+    votes.insert(3, '1');
+
     let env = ExecutorEnv::builder()
-        .write(&input)
+        .write(&votes)
         .unwrap()
         .build()
         .unwrap();
