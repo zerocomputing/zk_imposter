@@ -1,8 +1,8 @@
 use risc0_zkvm::guest::env;
 use std::collections::HashMap;
 
-fn process_votes(votes: &HashMap<u32, char>) -> u32 {
-    let mut votes_count: HashMap<char, u32> = HashMap::new();
+fn process_votes(votes: &HashMap<u32, u32>) -> u32 {
+    let mut votes_count: HashMap<u32, u32> = HashMap::new();
     let mut voted_players: u32 = 0; // Bit mask to track players who have voted
 
     for (player, vote) in votes.iter() {
@@ -25,7 +25,7 @@ fn process_votes(votes: &HashMap<u32, char>) -> u32 {
     let mut max_vote_count = 0;
     for (vote, count) in votes_count.iter() {
         if *count > max_vote_count {
-            max_vote = Some(*vote);
+            max_vote = Some(std::char::from_u32(*vote).unwrap_or('0'));
             max_vote_count = *count;
         }
     }
@@ -35,15 +35,16 @@ fn process_votes(votes: &HashMap<u32, char>) -> u32 {
 
 fn main() {
     // read the input
-    let votes: HashMap<u32, char> = env::read();
+    let votes: HashMap<u32, u32> = env::read();
 
     // Process the votes and print the voted imposter
     let winner = process_votes(&votes);
-    if let Some(winner_char) = char::from_u32(winner) {
-        println!("Player {} was voted as the imposter", winner_char);
-    } else {
-        println!("Player {} was voted as the imposter", winner);
-    }
+    println!("Player {} was voted as the imposter", winner);
+    // if let Some(winner_char) = char::from_u32(winner) {
+    //     println!("Player {} was voted as the imposter", winner_char);
+    // } else {
+    //     println!("Player {} was voted as the imposter", winner);
+    // }
 
     // write public output to the journal
     env::commit(&winner);
