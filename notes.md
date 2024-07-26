@@ -9,15 +9,16 @@
 
 # Proof Request: Submit Ballot
 - In: Voters and corresponding votes (e.g., {1: '3', 2: '3', 3: '1'})
+    - Note: Accept a single batch of votes as opposed to a rolling stream of votes
 - Circuit:
     - Loop through each vote 
     - Update vote count with each new vote
     - Mark player as having voted (use bit mask?)
 - Out: Voting log
 
-# Proof Request: Tally
-- In: voting log
+# Proof Request: Tally Votes
+- In: Voting log
 - Circuit:
     - Count votes
     - Determine winner
-- Out: Winner and voting log
+- Out: Proof of winner
