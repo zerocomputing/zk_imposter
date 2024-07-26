@@ -30,6 +30,7 @@ fn main() {
     votes.insert(2, '3');
     votes.insert(3, '1');
 
+    // Pass the HashMap to the guest program
     let env = ExecutorEnv::builder()
         .write(&votes)
         .unwrap()
@@ -51,7 +52,10 @@ fn main() {
     // TODO: Implement code for retrieving receipt journal here.
 
     // For example:
-    let _output: u32 = receipt.journal.decode().unwrap();
+    let decoded_value: u32 = receipt.journal.decode().unwrap();
+    let output_char = char::from_u32(decoded_value).unwrap_or('0');
+
+    println!("Generated a proof of the guest program. Player {} was voted as the imposter and is recorded in the journal ", output_char);
 
     // The receipt was verified at the end of proving, but the below code is an
     // example of how someone else could verify this receipt.

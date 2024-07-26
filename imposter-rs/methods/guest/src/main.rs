@@ -8,7 +8,7 @@ fn process_votes(votes: &HashMap<u32, char>) -> u32 {
     for (player, vote) in votes.iter() {
         // Check if the player has already voted
         if voted_players & (1 << player) != 0 {
-            continue; // Skip if the player has already voted
+            continue; 
         }
 
         // Update vote count
@@ -19,31 +19,34 @@ fn process_votes(votes: &HashMap<u32, char>) -> u32 {
         voted_players |= 1 << player;
     }
 
-    // Determine the winner
-    let mut max_vote = 0;
+    // Determine the voted imposter
+    println!("votes_count: {:?} ", votes_count);
+    let mut max_vote: Option<char> = None;
     let mut max_vote_count = 0;
     for (vote, count) in votes_count.iter() {
         if *count > max_vote_count {
-            max_vote = *vote as u32;
+            max_vote = Some(*vote);
             max_vote_count = *count;
         }
     }
 
-    max_vote
+    max_vote.unwrap_or('0') as u32
 }
 
-
 fn main() {
-    // TODO: Implement your guest code here
-
     // read the input
     let votes: HashMap<u32, char> = env::read();
 
-    // TODO: do something with the input
+    // Process the votes and print the voted imposter
     let winner = process_votes(&votes);
+    if let Some(winner_char) = char::from_u32(winner) {
+        println!("Player {} was voted as the imposter", winner_char);
+    } else {
+        println!("Player {} was voted as the imposter", winner);
+    }
 
     // write public output to the journal
-    env::commit(&input);
+    env::commit(&winner);
 }
 
 #[cfg(test)]
