@@ -7,18 +7,12 @@
 - Guess (player_id, guess, secret_word) # secret_word is none if imposter
 - Vote (player_id, vote)
 
-# Proof Request: Submit Ballot
+# Proof Request: Tally Votes
 - In: Voters and corresponding votes (e.g., {1: '3', 2: '3', 3: '1'})
     - Note: Accept a single batch of votes as opposed to a rolling stream of votes
 - Circuit:
     - Loop through each vote 
     - Update vote count with each new vote
     - Mark player as having voted (use bit mask?)
-- Out: Voting log
-
-# Proof Request: Tally Votes
-- In: Voting log
-- Circuit:
-    - Count votes
-    - Determine winner
-- Out: Proof of winner
+    - Determine the winner
+- Out: Winner, Voting log
