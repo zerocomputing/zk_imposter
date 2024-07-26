@@ -54,6 +54,7 @@ class Server:
             vote = pickle.loads(data)
             votes[vote] = votes.get(vote, 0) + 1
         alleged_imposter = int(max(votes, key=votes.get))
+        print(f"Votes: {votes}")
         self.announce_result(alleged_imposter)
 
     def announce_result(self, alleged_imposter):
