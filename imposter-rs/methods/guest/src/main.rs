@@ -37,9 +37,12 @@ fn check_imposter(roles: HashMap<u32, String>, winner: u32) -> bool {
     if let Some(role) = roles.get(&winner) {
         println!("The voted imposter's role is: {}", role);
         true
-       println!("No role found for the winner");
+    } else {
+        println!("No role found for the winner");
         false
     }
+}
+
 fn main() {
     // read the input
     let (roles, votes): (HashMap<u32, String>, HashMap<u32, u32>) = env::read();
