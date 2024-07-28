@@ -24,6 +24,12 @@ fn main() {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
+    // Create a HashMap for roles
+    let mut roles: HashMap<u32, String> = HashMap::new();
+    roles.insert(1, "detective".to_string());
+    roles.insert(2, "detective".to_string());
+    roles.insert(3, "imposter".to_string());
+    
     // Create a new HashMap for voters and votes
     let mut votes: HashMap<u32, u32> = HashMap::new();
     votes.insert(1, 3);
@@ -32,6 +38,8 @@ fn main() {
 
     // Pass the HashMap to the guest program
     let env = ExecutorEnv::builder()
+        .write(&roles)
+        .unwrap()
         .write(&votes)
         .unwrap()
         .build()
