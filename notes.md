@@ -16,3 +16,6 @@
     - Mark player as having voted (use bit mask?)
     - Determine the winner
 - Out: Winner, Voting log
+
+# Todo
+- [ ] Write test suites
