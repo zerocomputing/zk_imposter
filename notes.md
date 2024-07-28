@@ -19,3 +19,4 @@
 
 # Todo
 - [ ] Write test suites
+- [ ] Modify circuit inputs/outputs to fit with Solana contracts 
