@@ -57,8 +57,6 @@ fn main() {
     // extract the receipt.
     let receipt = prove_info.receipt;
 
-    // TODO: Implement code for retrieving receipt journal here.
-
     // For example:
     let output: u32 = receipt.journal.decode().unwrap();
 
