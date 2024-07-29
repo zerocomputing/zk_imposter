@@ -70,3 +70,85 @@ fn main() {
         .verify(IMPOSTER_GAME_ID)
         .unwrap();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn setup_env<'a>(roles: HashMap<u32, String>, votes: HashMap<u32, u32>) -> ExecutorEnv<'a> {
+        ExecutorEnv::builder()
+            .write(&roles)
+            .unwrap()
+            .write(&votes)
+            .unwrap()
+            .build()
+            .unwrap()
+    }
+
+    #[test]
+    fn test_case_1() {
+        println!("Running test case 1");
+        let mut roles: HashMap<u32, String> = HashMap::new();
+        roles.insert(1, "detective".to_string());
+        roles.insert(2, "detective".to_string());
+        roles.insert(3, "imposter".to_string());
+
+        let mut votes: HashMap<u32, u32> = HashMap::new();
+        votes.insert(1, 3);
+        votes.insert(2, 3);
+        votes.insert(3, 1);
+
+        let env = setup_env(roles, votes);
+        let prover = default_prover();
+        let prove_info = prover.prove(env, IMPOSTER_GAME_ELF).unwrap();
+        let receipt = prove_info.receipt;
+        let output: u32 = receipt.journal.decode().unwrap();
+
+        assert_eq!(output, 3);
+    }
+
+    #[test]
+    fn test_case_2() {
+        println!("Running test case 2");
+        let mut roles: HashMap<u32, String> = HashMap::new();
+        roles.insert(1, "imposter".to_string());
+        roles.insert(2, "detective".to_string());
+        roles.insert(3, "detective".to_string());
+
+        let mut votes: HashMap<u32, u32> = HashMap::new();
+        votes.insert(1, 2);
+        votes.insert(2, 1);
+        votes.insert(3, 1);
+
+        let env = setup_env(roles, votes);
+        let prover = default_prover();
+        let prove_info = prover.prove(env, IMPOSTER_GAME_ELF).unwrap();
+        let receipt = prove_info.receipt;
+        let output: u32 = receipt.journal.decode().unwrap();
+
+        assert_eq!(output, 1);
+    }
+
+    #[test]
+    fn test_case_3() {
+        println!("Running test case 3");
+        let mut roles: HashMap<u32, String> = HashMap::new();
+        roles.insert(1, "detective".to_string());
+        roles.insert(2, "imposter".to_string());
+        roles.insert(3, "detective".to_string());
+
+        let mut votes: HashMap<u32, u32> = HashMap::new();
+        votes.insert(1, 2);
+        votes.insert(2, 3);
+        votes.insert(3, 2);
+
+        let env = setup_env(roles, votes);
+        let prover = default_prover();
+        let prove_info = prover.prove(env, IMPOSTER_GAME_ELF).unwrap();
+        let receipt = prove_info.receipt;
+        let output: u32 = receipt.journal.decode().unwrap();
+
+        assert_eq!(output, 2);
+    }
+}
